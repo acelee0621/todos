@@ -1,10 +1,10 @@
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl
-from dotenv import load_dotenv
+
 from functools import lru_cache
 from typing import Any
 
-load_dotenv(".env")
+
 
 
 class Settings(BaseSettings):
