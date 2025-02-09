@@ -86,7 +86,7 @@ async def get_current_user(
     return user
 
 
-CurrentUser = Annotated[UserOut, Depends(get_current_user)]
+CurrentUserDep = Annotated[UserOut, Depends(get_current_user)]
 
 
 @router.post("/token", response_model=Token)

@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
 from typing import Annotated
-from todos.models.base import SessionLocal
+from todos.core.database import SessionLocal
 
 
 # 异步会话依赖
@@ -12,4 +12,4 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 # 使用 Annotated 标注会话依赖
-SessionDep = Annotated[AsyncSession, Depends(get_db)]
+DBSessionDep = Annotated[AsyncSession, Depends(get_db)]

@@ -1,8 +1,8 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl
 
 from functools import lru_cache
-from typing import Any
+
 
 
 
@@ -13,20 +13,10 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     JWT_LIFETIME_SECONDS: int = 60 * 60 * 12
 
-    CORS_ORIGINS: list[AnyHttpUrl] = ["http://localhost:3000", "http://127.0.0.1:8000"]
+    CORS_ORIGINS: list[AnyHttpUrl] = ["*"]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-
-        @classmethod
-        def parse_env_var(cls, field_name: str, raw_val: str) -> Any:
-            if field_name == "CORS_ORIGINS":
-                return [origin for origin in raw_val.split(";")]
-            # The following line is ignored by mypy because:
-            # error: Type'[Config]' has no attribute 'json_loads',
-            # even though it is like the documentation: https://docs.pydantic.dev/latest/usage/settings/
-            return cls.json_loads(raw_val)  # type: ignore[attr-defined]
+    model_config = SettingsConfigDict(env_file=(".env", ".env.local"))
+        
 
 
 @lru_cache()
