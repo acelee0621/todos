@@ -15,7 +15,7 @@ router = APIRouter(tags=["Lists"], dependencies=[Depends(get_current_user)])
 
 
 @router.post(
-    "/lists", response_model=ListUpdateOut, status_code=status.HTTP_201_CREATED
+    "/lists", response_model=ListOut, status_code=status.HTTP_201_CREATED
 )
 async def create_list(
     *, current_user: CurrentUserDep, db: DBSessionDep, data: ListBase
