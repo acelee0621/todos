@@ -43,8 +43,7 @@ async def get_list_by_id(list_id: int, db: AsyncSession, current_user):
             .options(selectinload(List.todos))
         )
         result = await db.scalars(query)
-        list_ = result.one_or_none()
-        list_ = await db.get(List, list_id)
+        list_ = result.one_or_none()        
         if not list_:
             return None
         return ListOut.model_validate(list_)
