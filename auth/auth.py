@@ -1,16 +1,18 @@
-from typing import Annotated
 from datetime import datetime, timedelta, timezone
 import jwt
+from jwt.exceptions import InvalidTokenError
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jwt.exceptions import InvalidTokenError
-from passlib.context import CryptContext
-from todos.core.config import settings
-from todos.schema.schema import TokenData, UserInDB, Token, UserCreate, UserOut
-from todos.core.dependencies import SessionDep
 from sqlalchemy import select
-from todos.models.tables import User
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from passlib.context import CryptContext
+
+from todos.core.config import settings
+from todos.schemas.schemas import Token, TokenData, UserCreate, UserResponse
+from todos.core.database import get_db
+from todos.models.models import User
+
 
 router = APIRouter(tags=["Auth"])
 
@@ -28,14 +30,18 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def get_user(db: SessionDep, username: str) -> UserInDB | None:
+async def get_user(
+    username: str, db: AsyncSession = Depends(get_db)
+) -> UserResponse | None:
     user = await db.scalar(select(User).where(User.username == username))
     if user:
-        return UserInDB.model_validate(user)
+        return UserResponse.model_validate(user)
     return None
 
 
-async def authenticate_user(db: SessionDep, username: str, password: str):
+async def authenticate_user(
+    username: str, password: str, db: AsyncSession = Depends(get_db)
+):
     user = await get_user(db, username)
     if not user:
         return False
@@ -58,8 +64,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep
-) -> UserOut:
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+) -> UserResponse:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -86,12 +92,9 @@ async def get_current_user(
     return user
 
 
-CurrentUserDep = Annotated[UserOut, Depends(get_current_user)]
-
-
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: SessionDep
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -113,8 +116,12 @@ async def login_for_access_token(
     )
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def register_user(user: UserCreate, db: SessionDep) -> UserOut:
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
+async def register_user(
+    user: UserCreate, db: AsyncSession = Depends(get_db)
+) -> UserResponse:
     # 创建新用户对象
     new_user = User(
         username=user.username,
@@ -136,4 +143,4 @@ async def register_user(user: UserCreate, db: SessionDep) -> UserOut:
             detail="Username or email already exists.",
         )
 
-    return UserOut.model_validate(new_user)  # 返回新创建的用户对象
+    return UserResponse.model_validate(new_user)  # 返回新创建的用户对象

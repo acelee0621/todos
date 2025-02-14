@@ -11,11 +11,11 @@ from todos.routers import users, lists, todos
 from todos.core.database import create_db_and_tables
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):    
     await create_db_and_tables()
     yield
+
     
 
 
