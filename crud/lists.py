@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 
 from todos.models.models import TodoList
 from todos.schemas.schemas import ListCreate, ListUpdate, ListResponse
@@ -45,7 +45,7 @@ async def get_list_by_id(list_id: int, db: AsyncSession, current_user):
             .options(selectinload(TodoList.todos))
         )
         result = await db.scalars(query)
-        list_ = result.scalar_one_or_none()
+        list_ = result.one_or_none()
         if not list_:
             return None
         return ListResponse.model_validate(list_)
@@ -60,18 +60,27 @@ async def update_list(list_id: int, data: ListUpdate, db: AsyncSession, current_
         )
         result = await db.scalars(query)
         list_item = result.one_or_none()
+        
         if not list_item:
-            return None
-        # 动态更新字段，排除不可修改的字段
-        update_data = data.model_dump(exclude_unset=True)
+            raise HTTPException(status_code=404, detail="TodoList not found")
+
+        # 过滤掉空值，防止传入空值导致错误
+        update_data = data.model_dump(exclude_unset=True, exclude_none=True)
+
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No valid fields to update")
+
         for key, value in update_data.items():
-            # 确保不修改 id 和 user_id
-            if key not in {"id", "user_id"}:
+            if key not in {"id", "user_id"}:  # 确保不修改 id 和 user_id
                 setattr(list_item, key, value)
-        db.add(list_item)
+
         await db.commit()
         await db.refresh(list_item)
         return ListResponse.model_validate(list_item)
+
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="List title must be unique for the user")
     except SQLAlchemyError:
         await db.rollback()
         raise HTTPException(status_code=500, detail="Database error, update failed")

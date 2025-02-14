@@ -49,7 +49,7 @@ async def get_list(
     return list_
 
 
-@router.put(
+@router.patch(
     "/lists/{list_id}", response_model=ListResponse, status_code=status.HTTP_200_OK
 )
 async def update_list_endpoint(

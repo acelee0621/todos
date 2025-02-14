@@ -62,7 +62,7 @@ async def get_todo_by_id(
     return todo
 
 
-@router.put(
+@router.patch(
     "/todos/{todo_id}", response_model=TodoResponse, status_code=status.HTTP_200_OK
 )
 async def update_todo_endpoint(

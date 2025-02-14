@@ -5,7 +5,6 @@ from sqlalchemy import String, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
 
-
 # 基础类
 class Base(DeclarativeBase):
     pass
@@ -50,7 +49,7 @@ class TodoList(Base):
 
     # 一对多关系：List -> Todo
     todos: Mapped[list["Todos"]] = relationship(
-        "Todos", back_populates="list", cascade="all, delete-orphan"
+        "Todos", back_populates="list", cascade="all, delete-orphan", lazy="selectin"
     )
 
     # 表级约束：确保每个用户的列表标题唯一
@@ -68,9 +67,7 @@ class Todos(Base):
     created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    completed: Mapped[bool] = mapped_column(
-        default=False, index=True, nullable=False
-    )
+    completed: Mapped[bool] = mapped_column(default=False, index=True, nullable=False)
     # 外键：关联到 List 表
     list_id: Mapped[int] = mapped_column(ForeignKey("lists.id"), nullable=False)
     # 外键：关联到 User 表

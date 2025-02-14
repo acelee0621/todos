@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
 from todos.core.config import settings
-from todos.schemas.schemas import Token, TokenData, UserCreate, UserResponse
+from todos.schemas.schemas import Token, TokenData, UserCreate, UserResponse, UserInDB
 from todos.core.database import get_db
 from todos.models.models import User
 
@@ -32,17 +32,19 @@ def get_password_hash(password):
 
 async def get_user(
     username: str, db: AsyncSession = Depends(get_db)
-) -> UserResponse | None:
-    user = await db.scalar(select(User).where(User.username == username))
+) -> UserInDB | None:
+    query = select(User).where(User.username == username)
+    result = await db.scalars(query)
+    user = result.one_or_none()
     if user:
-        return UserResponse.model_validate(user)
+        return UserInDB.model_validate(user)
     return None
 
 
 async def authenticate_user(
     username: str, password: str, db: AsyncSession = Depends(get_db)
 ):
-    user = await get_user(db, username)
+    user = await get_user(username, db) 
     if not user:
         return False
     if not verify_password(password, user.password_hash):
@@ -85,7 +87,7 @@ async def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
 
-    user = await get_user(db, username=token_data.username)  # 异步操作
+    user = await get_user(username=token_data.username,db=db)  # 异步操作
     if user is None:
         raise credentials_exception
 
@@ -96,16 +98,14 @@ async def get_current_user(
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
-    user = await authenticate_user(db, form_data.username, form_data.password)
+    user = await authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(
-        seconds=settings.JWT_LIFETIME_SECONDS
-    )  # 修正过期时间
+    access_token_expires = timedelta(seconds=settings.JWT_LIFETIME_SECONDS)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
