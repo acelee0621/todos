@@ -74,8 +74,7 @@ async def update_list(list_id: int, data: ListUpdate, db: AsyncSession, current_
             if key not in {"id", "user_id"}:  # 确保不修改 id 和 user_id
                 setattr(list_item, key, value)
 
-        await db.commit()
-        await db.refresh(list_item)
+        await db.commit()        
         return ListResponse.model_validate(list_item)
 
     except IntegrityError:
@@ -98,8 +97,7 @@ async def delete_list(list_id: int, db: AsyncSession, current_user):
             return None  # 返回 None 由路由函数处理 404
 
         await db.delete(list_item)
-        await db.commit()
-        return list_item
+        await db.commit()        
     except SQLAlchemyError:  # 仅捕获 SQL 相关异常，避免不必要的 broad exception
         await db.rollback()
         raise HTTPException(status_code=500, detail="Database error, delete failed")

@@ -71,8 +71,7 @@ async def update_todo(todo_id: int, data: TodoUpdate, db: AsyncSession, current_
             # 确保不修改 list_id 和 user_id
             if key not in {"list_id", "user_id"}:
                 setattr(todo_item, key, value)        
-        await db.commit()
-        await db.refresh(todo_item)
+        await db.commit()        
         return TodoResponse.model_validate(todo_item)
     except SQLAlchemyError:
         await db.rollback()
@@ -87,8 +86,7 @@ async def delete_todo(todo_id: int, db: AsyncSession, current_user):
         if not todo_item:
             return None  # 返回 None 表示未找到待删除的项
         await db.delete(todo_item)
-        await db.commit()  # 提交事务
-        return todo_item
+        await db.commit()  # 提交事务        
     except SQLAlchemyError:
         await db.rollback()  # 回滚事务
         raise HTTPException(status_code=500, detail="Database error, delete failed")
