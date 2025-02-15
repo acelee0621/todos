@@ -67,10 +67,9 @@ async def update_todo(todo_id: int, data: TodoUpdate, db: AsyncSession, current_
             return None
         # 动态更新字段，排除不可修改的字段
         update_data = data.model_dump(exclude_unset=True, exclude_none=True)
-        for key, value in update_data.items():
-            # 确保不修改 list_id 和 user_id
-            if key not in {"list_id", "user_id"}:
-                setattr(todo_item, key, value)        
+        # 确保不修改 list_id 和 user_id
+        update_data.pop("list_id", None)
+        update_data.pop("user_id", None)               
         await db.commit()        
         return TodoResponse.model_validate(todo_item)
     except SQLAlchemyError:
