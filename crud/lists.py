@@ -69,11 +69,12 @@ async def update_list(list_id: int, data: ListUpdate, db: AsyncSession, current_
         # 确保不修改 id 和 user_id
         update_data.pop("id", None)
         update_data.pop("user_id", None)
-
         if not update_data:
             raise HTTPException(status_code=400, detail="No valid fields to update")        
-
-        await db.commit()        
+        for key, value in update_data.items():
+            setattr(list_item, key, value)
+        await db.commit()
+        await db.refresh(list_item)        
         return ListResponse.model_validate(list_item)
 
     except IntegrityError:

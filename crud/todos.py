@@ -69,8 +69,14 @@ async def update_todo(todo_id: int, data: TodoUpdate, db: AsyncSession, current_
         update_data = data.model_dump(exclude_unset=True, exclude_none=True)
         # 确保不修改 list_id 和 user_id
         update_data.pop("list_id", None)
-        update_data.pop("user_id", None)               
-        await db.commit()        
+        update_data.pop("user_id", None)
+        
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No valid fields to update")
+        for key, value in update_data.items():
+            setattr(todo_item, key, value)               
+        await db.commit()
+        await db.refresh(todo_item)        
         return TodoResponse.model_validate(todo_item)
     except SQLAlchemyError:
         await db.rollback()
