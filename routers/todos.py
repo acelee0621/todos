@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from todos.auth.auth import get_current_user
-from todos.core.database import get_db
-from todos.schemas.schemas import TodoCreate, TodoUpdate, TodoResponse, UserResponse
-from todos.crud.todos import (
+from auth.auth import get_current_user
+from core.database import get_db
+from schemas.schemas import TodoCreate, TodoUpdate, TodoResponse, UserResponse
+from crud.todos import (
     create_todo_item,
     delete_todo,
     get_todos,

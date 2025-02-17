@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from todos.auth.auth import get_current_user
-from todos.schemas.schemas import UserResponse
+from auth.auth import get_current_user
+from schemas.schemas import UserResponse
 
 
 router = APIRouter(tags=["Users"], dependencies=[Depends(get_current_user)])

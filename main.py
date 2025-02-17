@@ -5,24 +5,23 @@ from fastapi import __version__ as fastapi_version
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from todos.core.config import settings
-from todos.auth import auth
-from todos.routers import users, lists, todos
-from todos.core.database import create_db_and_tables
+from core.config import settings
+from auth import auth
+from routers import users, lists, todos
+from core.database import create_db_and_tables
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):    
+async def lifespan(app: FastAPI):
     await create_db_and_tables()
     yield
-
-    
 
 
 app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 
+
 app.add_middleware(
-    CORSMiddleware,    
+    CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],

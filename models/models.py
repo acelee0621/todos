@@ -38,12 +38,14 @@ class TodoList(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(
-        String(64), default="Default List", index=True, nullable=False
+        String(64), default="Default List", nullable=False
     )
     description: Mapped[Optional[str]] = mapped_column(Text)
 
     # 外键：关联到 User 表
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, nullable=False
+    )
     # 多对一关系：List -> User
     owner: Mapped["User"] = relationship("User", back_populates="lists")
 
@@ -69,9 +71,13 @@ class Todos(Base):
     )
     completed: Mapped[bool] = mapped_column(default=False, index=True, nullable=False)
     # 外键：关联到 List 表
-    list_id: Mapped[int] = mapped_column(ForeignKey("lists.id"), nullable=False)
+    list_id: Mapped[int] = mapped_column(
+        ForeignKey("lists.id"), index=True, nullable=False
+    )
     # 外键：关联到 User 表
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, nullable=False
+    )
 
     # 多对一关系：Todo -> List
     list: Mapped["TodoList"] = relationship("TodoList", back_populates="todos")

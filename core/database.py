@@ -2,7 +2,7 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from todos.models.models import Base, User, TodoList, Todos
+from models.models import Base, User, TodoList, Todos
 
 SQLITE_DATABASE_URL = "sqlite+aiosqlite:///./database.db"
 

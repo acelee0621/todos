@@ -8,10 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
-from todos.core.config import settings
-from todos.schemas.schemas import Token, TokenData, UserCreate, UserResponse, UserInDB
-from todos.core.database import get_db
-from todos.models.models import User
+from core.config import settings
+from schemas.schemas import Token, TokenData, UserCreate, UserResponse, UserInDB
+from core.database import get_db
+from models.models import User
 
 
 router = APIRouter(tags=["Auth"])

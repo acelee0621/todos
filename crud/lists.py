@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 
-from todos.models.models import TodoList
-from todos.schemas.schemas import ListCreate, ListUpdate, ListResponse
+from models.models import TodoList
+from schemas.schemas import ListCreate, ListUpdate, ListResponse
 
 
 async def create_list_in_db(db: AsyncSession, current_user, data: ListCreate):
