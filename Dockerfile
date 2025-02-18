@@ -30,7 +30,7 @@
     # RUN mkdir -p /var/lib/app/data
 
     # 在容器内运行应用时，设置数据库路径到 /var/lib/app/data/ （生产环境使用）
-    ENV SQLITE_DB_PATH="/var/lib/app/data/todos.db"        
+    # ENV SQLITE_DB_PATH="/var/lib/app/data/todos.db"        
     
     # 运行 FastAPI 应用
     CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
