@@ -1,10 +1,14 @@
+import os
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from models.models import Base, User, TodoList, Todos
+from app.models.models import Base, User, TodoList, Todos
 
-SQLITE_DATABASE_URL = "sqlite+aiosqlite:///./database.db"
+# 从环境变量获取数据库路径，默认为 data/db.sqlite3
+database_path = os.getenv("SQLITE_DB_PATH", "data/todos.sqlite3")
+SQLITE_DATABASE_URL = f"sqlite+aiosqlite:///{database_path}"
+
 
 engine = create_async_engine(
     SQLITE_DATABASE_URL, echo=True, connect_args={"check_same_thread": False}

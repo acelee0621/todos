@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     JWT_LIFETIME_SECONDS: int = 60 * 60 * 12
     
 
-    model_config = SettingsConfigDict(env_file=(".env", ".env.local"))
+    model_config = SettingsConfigDict(env_file=("./.env", ".env.local"))
         
 
 

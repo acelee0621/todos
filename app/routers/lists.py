@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.auth import get_current_user
-from core.database import get_db
-from schemas.schemas import ListCreate, ListUpdate, ListResponse, UserResponse
-from crud.lists import (
+from app.auth.auth import get_current_user
+from app.core.database import get_db
+from app.schemas.schemas import ListCreate, ListUpdate, ListResponse, UserResponse
+from app.crud.lists import (
     get_lists,
     create_list_in_db,
     get_list_by_id,

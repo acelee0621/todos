@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload,joinedload
 from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 
-from models.models import TodoList
-from schemas.schemas import ListCreate, ListUpdate, ListResponse
+from app.models.models import TodoList
+from app.schemas.schemas import ListCreate, ListUpdate, ListResponse
 
 
 async def create_list_in_db(db: AsyncSession, current_user, data: ListCreate):
@@ -28,8 +28,8 @@ async def get_lists(db: AsyncSession, current_user):
     try:
         result = await db.scalars(
             select(TodoList)
-            .where(TodoList.user_id == current_user.id)
-            .options(selectinload(TodoList.todos))
+            .where(TodoList.user_id == current_user.id)            
+            # .options(selectinload(TodoList.todos))  #  models里定义了lazy属性就无需这条
         )
         lists = result.all()
         return [ListResponse.model_validate(list) for list in lists]
@@ -42,7 +42,7 @@ async def get_list_by_id(list_id: int, db: AsyncSession, current_user):
         query = (
             select(TodoList)
             .where(TodoList.id == list_id, TodoList.user_id == current_user.id)
-            .options(selectinload(TodoList.todos))
+            # .options(selectinload(TodoList.todos))  #  models里定义了lazy属性就无需这条
         )
         result = await db.scalars(query)
         list_ = result.one_or_none()

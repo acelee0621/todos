@@ -8,10 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
-from core.config import settings
-from schemas.schemas import Token, TokenData, UserCreate, UserResponse, UserInDB
-from core.database import get_db
-from models.models import User
+from app.core.config import settings
+from app.core.database import get_db
+from app.models.models import User
+from app.schemas.schemas import Token, TokenData, UserCreate, UserResponse, UserInDB
+
+
 
 
 router = APIRouter(tags=["Auth"])

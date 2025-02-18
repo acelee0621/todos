@@ -5,10 +5,10 @@ from fastapi import __version__ as fastapi_version
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from core.config import settings
-from auth import auth
-from routers import users, lists, todos
-from core.database import create_db_and_tables
+from app.core.config import settings
+from app.auth import auth
+from app.routers import users, lists, todos
+from app.core.database import create_db_and_tables
 
 
 @asynccontextmanager
