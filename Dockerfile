@@ -6,13 +6,13 @@
     # 安装 uv 到全局
     COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
     
-    # 复制项目依赖文件（避免复制整个 .venv）
+    # 复制项目依赖文件
     COPY pyproject.toml uv.lock ./
     
     # 创建虚拟环境并安装依赖
     RUN uv sync --frozen --no-cache
     
-    # 复制项目代码（不包含本机的 .venv）
+    # 复制项目代码
     COPY . .
     
     # -------------- 运行阶段 --------------
@@ -20,11 +20,11 @@
     
     WORKDIR /app    
     
-    # 复制应用代码（不包含本机的 .venv）
+    # 复制应用代码
     COPY --from=builder /app /app 
     
-    # 设置环境变量，使用 `.venv`
-    ENV PATH="/app/.venv/bin:$PATH"    
+    # 设置环境变量，使用 `.venv` (运行命令指定了就无需设置)
+    # ENV PATH="/app/.venv/bin:$PATH"    
         
     # 确保数据库目录存在（生产环境使用）
     # RUN mkdir -p /var/lib/app/data
@@ -34,6 +34,8 @@
     
     # 运行 FastAPI 应用
     CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
+    # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    
     
     # docker build -t todolist .
     # docker run -d --name todolist -p 8000:8000 -v /c/database/fastapi:/app/data todolist

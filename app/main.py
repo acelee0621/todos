@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.auth import auth
-from app.routers import users, lists, todos
+from app.routers import users, lists_routes, todos_route
 from app.core.database import create_db_and_tables
 
 
@@ -30,8 +30,8 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(users.router)
-app.include_router(lists.router)
-app.include_router(todos.router)
+app.include_router(lists_routes.router)
+app.include_router(todos_route.router)
 
 
 @app.get("/server-status", include_in_schema=False)
