@@ -145,8 +145,7 @@ class TodoListRepository:
         """
 
         new_todo = Todos(
-            title=data.title,
-            description=data.description,
+            content=data.content,            
             list_id=list_id,
             user_id=current_user.id,
         )

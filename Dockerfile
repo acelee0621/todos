@@ -1,5 +1,5 @@
 # -------------- 构建阶段 --------------
-    FROM python:3.13-alpine AS builder
+    FROM python:3.13.2-slim AS builder
 
     WORKDIR /app
     
@@ -16,7 +16,7 @@
     COPY . .
     
     # -------------- 运行阶段 --------------
-    FROM python:3.13-alpine  
+    FROM python:3.13.2-slim  
     
     WORKDIR /app    
     
@@ -24,7 +24,7 @@
     COPY --from=builder /app /app 
     
     # 设置环境变量，使用 `.venv` (运行命令指定了就无需设置)
-    # ENV PATH="/app/.venv/bin:$PATH"    
+    ENV PATH="/app/.venv/bin:$PATH"    
         
     # 确保数据库目录存在（生产环境使用）
     # RUN mkdir -p /var/lib/app/data
@@ -33,7 +33,8 @@
     # ENV SQLITE_DB_PATH="/var/lib/app/data/todos.db"        
     
     # 运行 FastAPI 应用
-    CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
+    CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
+    # CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
     # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     
     

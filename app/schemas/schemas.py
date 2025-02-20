@@ -39,8 +39,7 @@ class UserInDB(UserBase):
 
 
 class TodoBase(BaseModel):
-    title: str
-    description: str | None = None
+    content: str    
 
 
 class TodoCreate(TodoBase):
@@ -48,8 +47,7 @@ class TodoCreate(TodoBase):
 
 
 class TodoUpdate(BaseModel):  # 继承 BaseModel 避免继承 title
-    title: str | None = None
-    description: str | None = None
+    content: str | None = None    
     completed: bool | None = None  # 避免默认 False
 
 

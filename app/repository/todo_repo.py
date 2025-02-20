@@ -60,8 +60,7 @@ class TodosRepository:
 
         if search:
             query = query.where(
-                Todos.title.ilike(f"%{search}%")
-                | Todos.description.ilike(f"%{search}%")
+                Todos.content.ilike(f"%{search}%")                
             )
 
         if order_by:
