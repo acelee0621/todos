@@ -1,7 +1,10 @@
 __pycache__/
 .venv/
+alembic/
+
 
 .git
 .gitignore
 .python-version
+alembic.ini
 README.md
