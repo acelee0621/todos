@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import IntegrityError,SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import AlreadyExistsException, NotFoundException
@@ -51,8 +51,9 @@ class TodoListRepository:
             Optional[TodoList]: The TodoList if found, otherwise None.
         """
         query = (
-            select(TodoList)
-            .where(TodoList.id == list_id, TodoList.user_id == current_user.id)
+            select(TodoList).where(
+                TodoList.id == list_id, TodoList.user_id == current_user.id
+            )
             # .options(selectinload(TodoList.todos))  #  models里定义了lazy属性就无需这条
         )
         result = await self.session.scalars(query)
@@ -68,13 +69,12 @@ class TodoListRepository:
             List[TodoList]: List of all todo lists.
         """
         result = await self.session.scalars(
-            select(TodoList)
-            .where(TodoList.user_id == current_user.id)            
-            # .options(selectinload(TodoList.todos))  # 可用selectinload subqueryload            
+            select(TodoList).where(TodoList.user_id == current_user.id)
+            # .options(selectinload(TodoList.todos))  # 可用selectinload subqueryload
         )
         return result.all()
 
-    async def update(self, list_id: int, data: ListUpdate, current_user) -> TodoList:        
+    async def update(self, list_id: int, data: ListUpdate, current_user) -> TodoList:
         """Update an existing TodoList item for the current user.
 
         Args:
@@ -107,7 +107,7 @@ class TodoListRepository:
         for key, value in update_data.items():
             setattr(list_item, key, value)
         await self.session.commit()
-        await self.session.refresh(list_item)        
+        await self.session.refresh(list_item)
         return list_item
 
     async def delete(self, list_id: int, current_user) -> None:
@@ -127,8 +127,7 @@ class TodoListRepository:
 
         await self.session.delete(list)  # 触发 ORM 级联删除
         await self.session.commit()
-        
-        
+
     async def create_todo(self, list_id: int, data: TodoCreate, current_user) -> Todos:
         """Create a new TodoItem in a specific list for the current user.
 
@@ -145,7 +144,7 @@ class TodoListRepository:
         """
 
         new_todo = Todos(
-            content=data.content,            
+            content=data.content,
             list_id=list_id,
             user_id=current_user.id,
         )
@@ -157,8 +156,7 @@ class TodoListRepository:
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise Exception(f"Database operation failed, create failed {e}")
-        
-        
+
     async def get_todos_by_list_id(self, list_id: int, current_user) -> list[Todos]:
         """Get all TodoItems for the current user in a specific list.
 
@@ -174,4 +172,4 @@ class TodoListRepository:
         )
         result = await self.session.scalars(query)
         todos = result.all()
-        return todos    
+        return todos

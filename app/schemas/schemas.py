@@ -28,21 +28,21 @@ class UserCreate(UserBase):
 
 
 class UserResponse(UserBase):
-    id: int    
+    id: int
 
     model_config = ConfigDict(from_attributes=True)
-    
-    
+
+
 class UserInDB(UserBase):
     id: int
     password_hash: str
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
 class TodoBase(BaseModel):
     content: str
-    priority: str    
+    priority: str
 
 
 class TodoCreate(TodoBase):
@@ -54,11 +54,13 @@ class TodoCreate(TodoBase):
         try:
             return Priority[value]  # 例如 "low" -> Priority.low
         except KeyError:
-            raise ValueError(f"Invalid priority: {value}. Must be one of {[e.name for e in Priority]}")
+            raise ValueError(
+                f"Invalid priority: {value}. Must be one of {[e.name for e in Priority]}"
+            )
 
 
 class TodoUpdate(BaseModel):  # 继承 BaseModel 避免继承 title
-    content: str | None = None    
+    content: str | None = None
     completed: bool | None = None  # 避免默认 False
 
 
@@ -68,7 +70,7 @@ class TodoResponse(TodoBase):
     created_at: datetime
     completed: bool
     user_id: int
-    
+
     # 使用 field_validator 转换 priority 字段的值
     @field_validator("priority", mode="before")
     def convert_priority(cls, value):

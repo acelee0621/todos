@@ -77,7 +77,7 @@ class Todos(Base):
         default=Priority.low,
         nullable=False,
         comment="Priority, 1-low, 2-medium, 3-high",
-    )    
+    )
     created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )

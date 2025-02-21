@@ -59,9 +59,7 @@ class TodosRepository:
                 query = query.where(Todos.completed.is_(False))
 
         if search:
-            query = query.where(
-                Todos.content.ilike(f"%{search}%")                
-            )
+            query = query.where(Todos.content.ilike(f"%{search}%"))
 
         if order_by:
             if order_by == "created_at desc":
