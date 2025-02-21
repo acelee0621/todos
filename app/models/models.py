@@ -1,8 +1,15 @@
 from typing import Optional
 from datetime import datetime, timezone
+import enum
 
-from sqlalchemy import String, Text, ForeignKey, UniqueConstraint
+from sqlalchemy import String, Text, Enum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
+
+
+class Priority(enum.Enum):
+    low = 1
+    medium = 2
+    high = 3
 
 
 # 基础类
@@ -64,7 +71,13 @@ class Todos(Base):
     __tablename__ = "todos"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    content: Mapped[str] = mapped_column(String(64), nullable=False)    
+    content: Mapped[str] = mapped_column(String(64), nullable=False)
+    priority: Mapped[Enum] = mapped_column(
+        Enum(Priority),
+        default=Priority.low,
+        nullable=False,
+        comment="Priority, 1-low, 2-medium, 3-high",
+    )    
     created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )

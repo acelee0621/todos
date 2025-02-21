@@ -68,6 +68,10 @@ class TodosRepository:
                 query = query.order_by(desc(Todos.created_at))
             elif order_by == "created_at asc":
                 query = query.order_by(asc(Todos.created_at))
+            elif order_by == "priority desc":
+                query = query.order_by(desc(Todos.priority))
+            elif order_by == "priority asc":
+                query = query.order_by(asc(Todos.priority))
 
         result = await self.session.scalars(query)
         return result.all()

@@ -23,7 +23,7 @@
     # 复制应用代码
     COPY --from=builder /app /app 
     
-    # 设置环境变量，使用 `.venv` (运行命令指定了就无需设置)
+    # 设置环境变量，使用 `.venv`
     ENV PATH="/app/.venv/bin:$PATH"    
         
     # 确保数据库目录存在（生产环境使用）
@@ -33,10 +33,6 @@
     # ENV SQLITE_DB_PATH="/var/lib/app/data/todos.db"        
     
     # 运行 FastAPI 应用
-    CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
-    # CMD ["/app/.venv/bin/fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]
+    CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000"]    
     # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     
-    
-    # docker build -t todolist .
-    # docker run -d --name todolist -p 8000:8000 -v /c/database/fastapi:/app/data todolist

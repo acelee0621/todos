@@ -20,8 +20,8 @@ class TodoListService:
             ListResponse: newly created TodoList item.
         """
 
-        list = await self.repository.create(data, current_user)
-        return ListResponse.model_validate(list)        
+        new_list = await self.repository.create(data, current_user)
+        return ListResponse.model_validate(new_list)        
         
     async def get_list(self, list_id: int, current_user) -> ListResponse:
         """Get a TodoList by ID for the current user.

@@ -1,5 +1,7 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from datetime import datetime
+
+from app.models.models import Priority
 
 
 class Token(BaseModel):
@@ -39,11 +41,20 @@ class UserInDB(UserBase):
 
 
 class TodoBase(BaseModel):
-    content: str    
+    content: str
+    priority: str    
 
 
 class TodoCreate(TodoBase):
-    list_id: int
+    pass
+
+    @field_validator("priority")
+    def validate_priority(cls, value):
+        # 将字符串转换为枚举值
+        try:
+            return Priority[value]  # 例如 "low" -> Priority.low
+        except KeyError:
+            raise ValueError(f"Invalid priority: {value}. Must be one of {[e.name for e in Priority]}")
 
 
 class TodoUpdate(BaseModel):  # 继承 BaseModel 避免继承 title
@@ -57,6 +68,13 @@ class TodoResponse(TodoBase):
     created_at: datetime
     completed: bool
     user_id: int
+    
+    # 使用 field_validator 转换 priority 字段的值
+    @field_validator("priority", mode="before")
+    def convert_priority(cls, value):
+        if isinstance(value, Priority):
+            return value.name  # 将枚举值转换为字符串名称
+        return value
 
     model_config = ConfigDict(from_attributes=True)
 

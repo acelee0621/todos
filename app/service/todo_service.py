@@ -18,8 +18,8 @@ class TodosService:
         Returns:
             TodoResponse: The TodoItem if found.
         """
-        list = await self.repository.get_by_id(todo_id, current_user)
-        return TodoResponse.model_validate(list)
+        todo = await self.repository.get_by_id(todo_id, current_user)
+        return TodoResponse.model_validate(todo)
 
     async def get_todos(
         self,
@@ -54,8 +54,8 @@ class TodosService:
         Returns:
             TodoResponse: The updated TodoItem.
         """
-        list = await self.repository.update(todo_id, data, current_user)
-        return TodoResponse.model_validate(list)
+        updated_todo = await self.repository.update(todo_id, data, current_user)
+        return TodoResponse.model_validate(updated_todo)
 
     async def delete_todo(self, todo_id: int, current_user) -> None:
         """Delete an existing TodoItem for the current user.
