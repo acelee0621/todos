@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     JWT_ALGORITHM: str
     JWT_LIFETIME_SECONDS: int = 60 * 60 * 12
-    
+    DEBUG: bool = False
 
     model_config = SettingsConfigDict(env_file=("./.env", ".env.local"))
         
