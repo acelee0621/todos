@@ -1,5 +1,4 @@
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -6,12 +6,8 @@ from app.models.models import Priority
 
 class Token(BaseModel):
     access_token: str
-    token_type: str
-    expires_in: int
-
-
-class TokenData(BaseModel):
-    username: str | None = None
+    token_type: str = "bearer"
+    
 
 
 class UserBase(BaseModel):
@@ -38,6 +34,11 @@ class UserInDB(UserBase):
     password_hash: str
 
     model_config = ConfigDict(from_attributes=True)
+    
+    
+class LoginData(BaseModel):
+    username: str
+    password: str
 
 
 class TodoBase(BaseModel):

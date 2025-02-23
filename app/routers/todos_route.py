@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.logging import get_logger
-from app.auth.auth import get_current_user
+from app.core.security import get_current_user
 from app.repository.todo_repo import TodosRepository
 from app.service.todo_service import TodosService
 from app.schemas.schemas import TodoUpdate, TodoResponse, UserResponse
