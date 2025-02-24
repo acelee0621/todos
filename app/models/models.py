@@ -1,9 +1,15 @@
 from typing import Optional
 from datetime import datetime, timezone
+import enum
 
-from sqlalchemy import String, Text, ForeignKey, UniqueConstraint
+from sqlalchemy import String, Text, Enum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
+
+class Priority(enum.Enum):
+    low = 1
+    medium = 2
+    high = 3
 
 
 # 基础类
@@ -39,18 +45,20 @@ class TodoList(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(
-        String(64), default="Default List", index=True, nullable=False
+        String(64), default="Default List", nullable=False
     )
     description: Mapped[Optional[str]] = mapped_column(Text)
 
     # 外键：关联到 User 表
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, nullable=False
+    )
     # 多对一关系：List -> User
     owner: Mapped["User"] = relationship("User", back_populates="lists")
 
     # 一对多关系：List -> Todo
     todos: Mapped[list["Todos"]] = relationship(
-        "Todos", back_populates="list", cascade="all, delete-orphan"
+        "Todos", back_populates="list", cascade="all, delete-orphan", lazy="selectin"
     )
 
     # 表级约束：确保每个用户的列表标题唯一
@@ -63,18 +71,25 @@ class Todos(Base):
     __tablename__ = "todos"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[str] = mapped_column(String(64), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    content: Mapped[str] = mapped_column(String(64), nullable=False)
+    priority: Mapped[Enum] = mapped_column(
+        Enum(Priority),
+        default=Priority.low,
+        nullable=False,
+        comment="Priority, 1-low, 2-medium, 3-high",
+    )
     created_at: Mapped[datetime] = mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
-    completed: Mapped[bool] = mapped_column(
-        default=False, index=True, nullable=False
-    )
+    completed: Mapped[bool] = mapped_column(default=False, index=True, nullable=False)
     # 外键：关联到 List 表
-    list_id: Mapped[int] = mapped_column(ForeignKey("lists.id"), nullable=False)
+    list_id: Mapped[int] = mapped_column(
+        ForeignKey("lists.id"), index=True, nullable=False
+    )
     # 外键：关联到 User 表
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, nullable=False
+    )
 
     # 多对一关系：Todo -> List
     list: Mapped["TodoList"] = relationship("TodoList", back_populates="todos")
