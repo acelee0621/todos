@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import PyJWTError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
@@ -60,7 +60,7 @@ async def get_current_user(
         )  # "sub" 是 JWT 的标准字段，通常用于存储主体标识
         if username is None:
             raise credentials_exception        
-    except InvalidTokenError:
+    except PyJWTError:
         raise credentials_exception
     
     # Import here to avoid circular imports

@@ -1,3 +1,4 @@
+import os
 import asyncio
 import json
 from aio_pika import connect_robust, Message, DeliveryMode, IncomingMessage
@@ -5,6 +6,10 @@ from aio_pika.abc import AbstractRobustConnection, AbstractChannel
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)
+
+# 从环境变量获取RibbitMQ服务器路径，默认为 data/db.sqlite3
+ribbitmq_host = os.getenv("RIBBITMQ_HOST", "localhost")
+RIBBITMQ_URL = f"amqp://user:bitnami@{ribbitmq_host}"
 
 class RabbitMQClient:
     """RabbitMQ 客户端,支持持久化连接,可同时作为Producer和Consumer."""
@@ -18,7 +23,7 @@ class RabbitMQClient:
         return cls._instance
 
     def __init__(self):
-        self.host = "amqp://user:bitnami@localhost/"
+        self.host = RIBBITMQ_URL
         self.connection: AbstractRobustConnection | None = None
         self.channel: AbstractChannel | None = None
         self._initialized = False  # 标记是否已初始化
