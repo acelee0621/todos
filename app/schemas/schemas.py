@@ -7,7 +7,6 @@ from app.models.models import Priority
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    
 
 
 class UserBase(BaseModel):
@@ -34,8 +33,8 @@ class UserInDB(UserBase):
     password_hash: str
 
     model_config = ConfigDict(from_attributes=True)
-    
-    
+
+
 class LoginData(BaseModel):
     username: str
     password: str
@@ -62,7 +61,18 @@ class TodoCreate(TodoBase):
 
 class TodoUpdate(BaseModel):  # 继承 BaseModel 避免继承 title
     content: str | None = None
+    priority: str | None = None
     completed: bool | None = None  # 避免默认 False
+
+    @field_validator("priority")
+    def validate_priority(cls, value):
+        # 将字符串转换为枚举值
+        try:
+            return Priority[value]  # 例如 "low" -> Priority.low
+        except KeyError:
+            raise ValueError(
+                f"Invalid priority: {value}. Must be one of {[e.name for e in Priority]}"
+            )
 
 
 class TodoResponse(TodoBase):
