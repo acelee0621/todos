@@ -1,4 +1,5 @@
 from app.repository.list_repo import TodoListRepository
+from app.utils.rabbitmq import RabbitMQClient
 from app.schemas.schemas import (
     ListResponse,
     ListCreate,
@@ -13,6 +14,7 @@ class TodoListService:
         """Service layer for list operations."""
 
         self.repository = repository
+        self.rabbitmq = RabbitMQClient()
 
     async def create_list(self, data: ListCreate, current_user) -> ListResponse:
         """Create a new TodoList item.
@@ -94,6 +96,17 @@ class TodoListService:
             TodoResponse: newly created TodoItem item.
         """
         todo = await self.repository.create_todo(list_id, data, current_user)
+        if todo:
+            message = {
+                "todo_id": todo.id,
+                "content": todo.content,
+                "priority": str(todo.priority),
+                "completed": todo.completed,                
+                "list_id": todo.list_id,
+                "user_id": str(todo.user_id),
+                "action": "created"
+            }
+            await self.rabbitmq.send_message(message=message, queue="todo_notifications")
         return TodoResponse.model_validate(todo)
 
     async def get_todos_in_list(self, list_id: int, current_user) -> list[TodoResponse]:

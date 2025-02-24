@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.users import routes
-from app.routers import lists_routes, todos_route
+from app.routers import lists_routes, todos_route, notification
 from app.core.database import create_db_and_tables
 
 
@@ -31,9 +31,10 @@ app.add_middleware(
 )
 
 
-app.include_router(routes.router)
+app.include_router(routes.router)  # Users 相关路由
 app.include_router(lists_routes.router)
 app.include_router(todos_route.router)
+app.include_router(notification.router)
 
 
 @app.get("/health")
