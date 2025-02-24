@@ -7,7 +7,7 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-# 从环境变量获取RibbitMQ服务器路径，默认为 data/db.sqlite3
+# 从环境变量获取RibbitMQ服务器主机名称，默认为 localhost
 ribbitmq_host = os.getenv("RIBBITMQ_HOST", "localhost")
 RIBBITMQ_URL = f"amqp://user:bitnami@{ribbitmq_host}"
 
