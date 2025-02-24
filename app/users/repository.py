@@ -15,7 +15,7 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, user_data: UserCreate) -> UserResponse:        
+    async def create(self, user_data: UserCreate) -> UserInDB:        
         """
         Create a new user.
 
@@ -23,7 +23,7 @@ class UserRepository:
             user_data (UserCreate): Data for the new user.
 
         Returns:
-            UserResponse: The newly created user.
+            UserInDB: The newly created user.
 
         Raises:
             AlreadyExistsException: If the username already exists.

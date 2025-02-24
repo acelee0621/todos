@@ -33,7 +33,8 @@ async def register(
     user_data: UserCreate, session: AsyncSession = Depends(get_db)
 ) -> UserResponse:
     logger.debug(f"Registering user: {user_data.username}")
-    await UserService(session).create_user(user_data)
+    new_user = await UserService(session).create_user(user_data)
+    return UserResponse.model_validate(new_user)
     
     
 @router.get("/me", response_model=UserResponse)

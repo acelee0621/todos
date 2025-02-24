@@ -24,7 +24,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
-    password_hash: str
+    
     model_config = ConfigDict(from_attributes=True)
 
 

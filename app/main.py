@@ -15,7 +15,7 @@ setup_logging()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_db_and_tables()
+    # await create_db_and_tables()
     yield
 
 

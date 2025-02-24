@@ -19,7 +19,7 @@ class UserService:
         self.session = session
         self.repository = UserRepository(session)
 
-    async def create_user(self, user_data: UserCreate) -> UserResponse:
+    async def create_user(self, user_data: UserCreate) -> UserInDB:
         """Create a new user."""
         return await self.repository.create(user_data)
 
