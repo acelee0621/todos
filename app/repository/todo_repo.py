@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlalchemy import select, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -39,7 +37,7 @@ class TodosRepository:
 
     async def get_all(
         self,
-        user_id: UUID,
+        user_id: int,
         list_id: int | None = None,
         status: str | None = None,
         search: str | None = None,
