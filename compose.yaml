@@ -1,0 +1,40 @@
+
+name: todo_list
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: TodoList
+    ports:
+      - "8000:8000" #右侧为容器内部端口
+    volumes:
+      - data:/app/data
+    environment:
+      - SQLITE_DB_PATH=/app/data/todos.sqlite3
+      - RIBBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+    
+
+  rabbitmq:
+    image: bitnami/rabbitmq:latest
+    container_name: RabbitMQ
+    # expose:
+    #   - "5672"   # 仅在 Docker 内部网络可访问
+    #   - "15672"  # 仅在 Docker 内部网络可访问
+    ports:  # 如果你使用 Docker 外部网络
+      - "5672:5672"    # RabbitMQ 默认端口
+      - "15672:15672"  # RabbitMQ 管理界面端口
+    environment:
+      - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true      
+    volumes:
+      - rabbitmq_data:/bitnami/rabbitmq/mnesia  # 持久化 RabbitMQ 数据
+
+volumes:
+  data:
+    driver: local
+  rabbitmq_data:
+    driver: local
